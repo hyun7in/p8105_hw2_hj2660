@@ -1,26 +1,32 @@
 ---
 title: "p8105_hw2_hj2660"
+author: "Hyun Jin Jung"
+date: "2023-10-04"
 output: github_document
+editor_options: 
+  chunk_output_type: console
 ---
 
-```{r}
+```{r setup, include = FALSE}
 library(tidyverse)
 library(dplyr)
 ```
 
 ## Problem 1
 
+Clean the data in pols-month.csv. There are months when Ford became president following Nixon, during which the 'prez_gop' variable is 2. We can reassign these cases to be coded as 'gop,' which is consistent with months when 'prez_gop' is 1. This ensures that the 'president' variable maintains consistency in labeling the political affiliation, regardless of the transition between Nixon and Ford.
 
 ```{r}
 pols_df = 
   read.csv("fivethirtyeight_datasets/pols-month.csv") |>
   separate(mon, into = c("year", "month", "day"), sep = "-") |>
   mutate(month = month.abb[as.integer(month)]) |>
-  mutate(president = if_else(prez_dem > prez_gop, "dem", "gop")) |>
+  mutate(president = recode(prez_gop, "0" =  "dem", "1" = "gop", "2" = "gop")) |>
   mutate(year = as.integer(year)) |>
   select(-prez_gop, -prez_dem, -day)
 ```
 
+Clean the data in snp.csv, and to ensure the year is in four digits, we can use 'if_else'.
 
 ```{r}
 snp_df = 
@@ -33,6 +39,7 @@ snp_df =
   select(year, month, close)
 ```
 
+Tidy data in unemployment.csv and change from 'wide' to 'long' format so that it can be merged with the other two datasets.
 
 ```{r}
 unemployment_df = 
@@ -46,12 +53,31 @@ unemployment_df =
   select(year, month, unemployment)
 ```
 
+Join the datasets by merging pols_df, snap_df, and unemployment_df
 
 ```{r}
 data = 
   left_join(pols_df, snp_df, by = c("year", "month")) |>
   left_join(unemployment_df, by = c("year", "month"))
+
+str(data)
 ```
 
+```{r, echo=FALSE, results='hide'}
+average_unemployment_dem = data |>
+  filter(month == "Jan", year >= 1975, president == "dem") |>
+  pull(unemployment) |>
+  mean() |>
+  round(2)
+```
 
+```{r, echo=FALSE, results='hide'}
+average_unemployment_gop = data |>
+  filter(month == "Jan", year >= 1975, president == "gop") |>
+  pull(unemployment) |>
+  mean() |>
+  round(2)
+```
+
+The 'pols_df' has 822 observations and 11 variables and tells about the party affiliation distribution of national politicians from 1947 to 2015. The 'snp_df' has 787 observations and 3 variables, ranging from years 1950 to 2015. The 'unemployment_df' has 816 observations and 3 variables, covering the years from 1948 to 2015. The average unemployment rate for January, starting in the year 1975, during months when the president is a Democrat, is 6.57%. The average unemployment rate for Republicans over the same time period was 6.47%. Missing values in the 'close' and 'unemployment' variables have been replaced with 'NA' values.
 
