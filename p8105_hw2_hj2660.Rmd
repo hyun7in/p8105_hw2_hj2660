@@ -88,7 +88,7 @@ The `pols_df` has `r nrow(pols_df)` observations and `r ncol(pols_df)` variables
 Clean and organize the dataset for Mr. Trash Wheel.
 ```{r}
 MrTrashWheel_df = 
-  readxl::read_excel("./Trash_Wheel/Trash_Wheel_Data.xlsx", sheet = "Mr. Trash Wheel", range = "A2:N549") |>
+  readxl::read_excel("./Trash_Wheel/202309 Trash Wheel Collection Data.xlsx", sheet = "Mr. Trash Wheel", range = "A2:N586") |>
   janitor::clean_names() |>
   mutate(homes_powered = (weight_tons * 500)/30) |>
   mutate(trash_wheel = "Mr. Trash Wheel") |>
@@ -99,7 +99,7 @@ MrTrashWheel_df =
 Clean and organize the dataset for Professor Trash Wheel.
 ```{r}
 ProfTrashWheel_df =
-  readxl::read_excel("./Trash_Wheel/Trash_Wheel_Data.xlsx", sheet = "Professor Trash Wheel", range = "A2:M96") |>
+  readxl::read_excel("./Trash_Wheel/202309 Trash Wheel Collection Data.xlsx", sheet = "Professor Trash Wheel", range = "A2:M108") |>
   janitor::clean_names() |>
   mutate(homes_powered = (weight_tons * 500)/30) |>
   mutate(trash_wheel = "Professor Trash Wheel") |>
@@ -109,7 +109,7 @@ ProfTrashWheel_df =
 Clean and organize the dataset for Gwynnda Trash Wheel.
 ```{r}
 GwynTrashWheel_df =
-  readxl::read_excel("./Trash_Wheel/Trash_Wheel_Data.xlsx", sheet = "Gwynnda Trash Wheel", range = "A2:K108") |>
+  readxl::read_excel("./Trash_Wheel/202309 Trash Wheel Collection Data.xlsx", sheet = "Gwynnda Trash Wheel", range = "A2:K157") |>
   janitor::clean_names() |>
   mutate(homes_powered = (weight_tons * 500)/30) |>
   mutate(trash_wheel = "Gwynnda Trash Wheel") |>
@@ -122,14 +122,6 @@ combined_df =
   bind_rows(MrTrashWheel_df, ProfTrashWheel_df, GwynTrashWheel_df)
 ```
 
-```{r, echo=FALSE, results='hide'}
-ncol(MrTrashWheel_df)
-nrow(MrTrashWheel_df)
-ncol(ProfTrashWheel_df)
-nrow(ProfTrashWheel_df)
-ncol(GwynTrashWheel_df)
-nrow(GwynTrashWheel_df)
-```
 
 ```{r, echo=FALSE, results='hide'}
 total_weight_profTW =
