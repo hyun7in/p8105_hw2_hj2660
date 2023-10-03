@@ -79,7 +79,7 @@ average_unemployment_gop = data |>
   round(2)
 ```
 
-The 'pols_df' has 822 observations and 11 variables and tells about the party affiliation distribution of national politicians from 1947 to 2015. The 'snp_df' has 787 observations and 3 variables, ranging from years 1950 to 2015. The 'unemployment_df' has 816 observations and 3 variables, covering the years from 1948 to 2015. The average unemployment rate for January, starting in the year 1975, during months when the president is a Democrat, is 6.57%. The average unemployment rate for Republicans over the same time period was 6.47%. Missing values in the 'close' and 'unemployment' variables have been replaced with 'NA' values.
+The `pols_df` has `r nrow(pols_df)` observations and `r ncol(pols_df)` variables and tells about the party affiliation distribution of national politicians from 1947 to 2015. The `snp_df` has `r nrow(snp_df)` observations and `r ncol(snp_df)` variables, ranging from years 1950 to 2015. The `unemployment_df` has `r nrow(unemployment_df)` observations and `r ncol(unemployment_df)` variables, covering the years from 1948 to 2015. The average unemployment rate for January, starting in the year 1975, during months when the president is a Democrat, is `r average_unemployment_dem`%. The average unemployment rate for Republicans over the same time period was `r average_unemployment_gop`%. Missing values in the 'close' and 'unemployment' variables have been replaced with 'NA' values.
 
 
 ## Problem 2
