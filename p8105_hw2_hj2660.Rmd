@@ -81,3 +81,73 @@ average_unemployment_gop = data |>
 
 The 'pols_df' has 822 observations and 11 variables and tells about the party affiliation distribution of national politicians from 1947 to 2015. The 'snp_df' has 787 observations and 3 variables, ranging from years 1950 to 2015. The 'unemployment_df' has 816 observations and 3 variables, covering the years from 1948 to 2015. The average unemployment rate for January, starting in the year 1975, during months when the president is a Democrat, is 6.57%. The average unemployment rate for Republicans over the same time period was 6.47%. Missing values in the 'close' and 'unemployment' variables have been replaced with 'NA' values.
 
+
+## Problem 2
+
+
+Clean and organize the dataset for Mr. Trash Wheel.
+```{r}
+MrTrashWheel_df = 
+  readxl::read_excel("./Trash_Wheel/Trash_Wheel_Data.xlsx", sheet = "Mr. Trash Wheel", range = "A2:N549") |>
+  janitor::clean_names() |>
+  mutate(homes_powered = (weight_tons * 500)/30) |>
+  mutate(trash_wheel = "Mr. Trash Wheel") |>
+  mutate(year = as.character(year)) 
+```
+
+
+Clean and organize the dataset for Professor Trash Wheel.
+```{r}
+ProfTrashWheel_df =
+  readxl::read_excel("./Trash_Wheel/Trash_Wheel_Data.xlsx", sheet = "Professor Trash Wheel", range = "A2:M96") |>
+  janitor::clean_names() |>
+  mutate(homes_powered = (weight_tons * 500)/30) |>
+  mutate(trash_wheel = "Professor Trash Wheel") |>
+  mutate(year = as.character(year))
+```
+
+Clean and organize the dataset for Gwynnda Trash Wheel.
+```{r}
+GwynTrashWheel_df =
+  readxl::read_excel("./Trash_Wheel/Trash_Wheel_Data.xlsx", sheet = "Gwynnda Trash Wheel", range = "A2:K108") |>
+  janitor::clean_names() |>
+  mutate(homes_powered = (weight_tons * 500)/30) |>
+  mutate(trash_wheel = "Gwynnda Trash Wheel") |>
+  mutate(year = as.character(year))
+```
+
+While combining three datasets, an error occurred, indicating that there was a data type mismatch between the 'year' columns, with one being of type 'character' and the other of type 'double.' To resolve this issue, the 'year' column in each dataset was uniformly converted to the 'character' data type. Additionally, a 'trash_wheel' column was introduced in each dataset to specify the corresponding Trash Wheel.
+```{r}
+combined_df = 
+  bind_rows(MrTrashWheel_df, ProfTrashWheel_df, GwynTrashWheel_df)
+```
+
+```{r, echo=FALSE, results='hide'}
+ncol(MrTrashWheel_df)
+nrow(MrTrashWheel_df)
+ncol(ProfTrashWheel_df)
+nrow(ProfTrashWheel_df)
+ncol(GwynTrashWheel_df)
+nrow(GwynTrashWheel_df)
+```
+
+```{r, echo=FALSE, results='hide'}
+total_weight_profTW =
+  ProfTrashWheel_df |>
+  pull(weight_tons) |>
+  sum()
+```
+
+```{r, echo=FALSE, results='hide'}
+total_cig_Gwyn_july21 =
+  GwynTrashWheel_df |>
+  filter(format(date, "%Y-%m") == "2021-07") |>
+  pull(cigarette_butts) |>
+  sum() |>
+  as.integer()
+```
+
+The `MrTrashWheel_df` has `r nrow(MrTrashWheel_df)` observations and `r ncol(MrTrashWheel_df)` variables. The `ProfTrashWheel_df` has `r nrow(ProfTrashWheel_df)` observations and `r ncol(ProfTrashWheel_df)` variables. The `GwynTrashWheel_df` has `r nrow(GwynTrashWheel_df)` observations and `r ncol(GwynTrashWheel_df)` variables. The total weight of trash collected by Professor Trash Wheel is `r total_weight_profTW`. The total number of cigarette butts collected by Gwynnda in July of 2021 is `r total_cig_Gwyn_july21`.
+
+and give examples of key variables. 
+
