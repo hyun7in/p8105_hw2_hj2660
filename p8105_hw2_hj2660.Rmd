@@ -117,19 +117,44 @@ GwynTrashWheel_df =
 ```
 
 While combining three datasets, an error occurred, indicating that there was a data type mismatch between the 'year' columns, with one being of type 'character' and the other of type 'double.' To resolve this issue, the 'year' column in each dataset was uniformly converted to the 'character' data type. Additionally, a 'trash_wheel' column was introduced in each dataset to specify the corresponding Trash Wheel.
+
 ```{r}
 combined_df = 
   bind_rows(MrTrashWheel_df, ProfTrashWheel_df, GwynTrashWheel_df)
 ```
 
+In the `MrTrashWheel_df` dataset, there are `r nrow(MrTrashWheel_df)` observations and `r ncol(MrTrashWheel_df)` variables. The average number of homes powered is `r MrTrashWheel_df |> pull(homes_powered) |> mean()`, and the total weight of trash collected is `r MrTrashWheel_df |> pull(weight_tons) |> sum()` tons. For the `ProfTrashWheel_df` dataset, it consists of `r nrow(ProfTrashWheel_df)` observations and `r ncol(ProfTrashWheel_df)` variables, with an average of homes powered equal to `r ProfTrashWheel_df |> pull(homes_powered) |> mean()`. The total weight of trash collected by Professor Trash Wheel is `r ProfTrashWheel_df |> pull(weight_tons) |> sum()` tons. For the `GwynTrashWheel_df` dataset, there are `r nrow(GwynTrashWheel_df)` observations and `r ncol(GwynTrashWheel_df)` variables. The average number of homes powered is `r GwynTrashWheel_df |> pull(homes_powered) |> mean()`, and the total weight of trash collected is `r GwynTrashWheel_df |> pull(weight_tons) |> sum()` tons. Lastly, Gwynnda collected a total of `r GwynTrashWheel_df |> filter(format(date, "%Y-%m") == "2021-07") |> pull(cigarette_butts) |> sum() |> as.integer()` cigarette butts in July of 2021.
 
-In the `MrTrashWheel_df` dataset, there are `r nrow(MrTrashWheel_df)` observations and `r ncol(MrTrashWheel_df)` variables. The average number of homes powered is `r MrTrashWheel_df |> pull(homes_powered) |> mean()`, and the total weight of trash collected is `r MrTrashWheel_df |> pull(weight_tons) |> sum()` tons. For the `ProfTrashWheel_df` dataset, it consists of `r nrow(ProfTrashWheel_df)` observations and `r ncol(ProfTrashWheel_df)` variables, with an average of homes powered equal to `r ProfTrashWheel_df |> pull(homes_powered) |> mean()`. The total weight of trash collected by Professor Trash Wheel is `r total_weight_profTW` tons. For the `GwynTrashWheel_df` dataset, there are `r nrow(GwynTrashWheel_df)` observations and `r ncol(GwynTrashWheel_df)` variables. The average number of homes powered is `r GwynTrashWheel_df |> pull(homes_powered) |> mean()`, and the total weight of trash collected is `r GwynTrashWheel_df |> pull(weight_tons) |> sum()` tons. Lastly, Gwynnda collected a total of `r GwynTrashWheel_df |> filter(format(date, "%Y-%m") == "2021-07") |> pull(cigarette_butts) |> sum() |> as.integer()` cigarette butts in July of 2021.
+## Problem 3
 
+```{r}
+MCI_baseline_df = 
+  read.csv("data_mci/MCI_baseline.csv", skip = 1) |>
+  janitor::clean_names() |>
+  mutate(sex = recode(sex, '1' = "male", '0' = "female")) |>
+  mutate(apoe4 = recode(apoe4, '1' = "APOE4 carrier", '0' = "APOE4 non-carrier"))
 
+dev_MCI = 
+  MCI_baseline_df |>
+  filter(age_at_onset !=".")
+```
 
+```{r, echo=FALSE, results='hide'}
+apoe4_carriers =
+  MCI_baseline_df |>
+  filter(sex == "female") |> 
+  filter (apoe4 == "APOE4 carrier") |> 
+  nrow()
 
+total_female = 
+  MCI_baseline_df |>
+  filter(sex == "female") |>
+  nrow()
 
+proportion_apoe4_carriers =
+  apoe4_carriers / total_female
+```
 
+Import `MCI_baseline.csv` and in order to read csv file from row 2, use `skip = 1`. Use `mutate` function to update the 'sex' and 'apoe4' column. `filter` function has been used to remove the rows where `age_at_onset` has empty values which indicates no MCI at baseline. `r nrow(MCI_baseline_df)` participants were recruited and `r nrow(dev_MCI)` developed MCI. The average baseline age of all the participants is `r MCI_baseline_df |> pull(current_age) |> mean()` and the average baseline age for ones who developed MCI is `r dev_MCI |> pull(current_age) |> mean()`. The proportion of women in the study that are APOE4 carriers is `r proportion_apoe4_carriers`.
 
-and give examples of key variables. 
 
