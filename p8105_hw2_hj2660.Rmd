@@ -3,8 +3,6 @@ title: "p8105_hw2_hj2660"
 author: "Hyun Jin Jung"
 date: "2023-10-04"
 output: github_document
-editor_options: 
-  chunk_output_type: console
 ---
 
 ```{r setup, include = FALSE}
