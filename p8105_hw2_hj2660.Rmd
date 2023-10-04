@@ -116,7 +116,7 @@ GwynTrashWheel_df =
   mutate(year = as.character(year))
 ```
 
-While combining three datasets, an error occurred, indicating that there was a data type mismatch between the 'year' columns, with one being of type 'character' and the other of type 'double.' To resolve this issue, the 'year' column in each dataset was uniformly converted to the 'character' data type. Additionally, a 'trash_wheel' column was introduced in each dataset to specify the corresponding Trash Wheel.
+While combining three datasets, an error occurred, indicating that there was a data type mismatch between the `year` columns, with one being of type 'character' and the other of type 'double.' To resolve this issue, the `year` column in each dataset was uniformly converted to the 'character' data type. Additionally, a `trash_wheel` column was introduced in each dataset to specify the corresponding Trash Wheel.
 
 ```{r}
 combined_df = 
@@ -155,6 +155,26 @@ proportion_apoe4_carriers =
   apoe4_carriers / total_female
 ```
 
-Import `MCI_baseline.csv` and in order to read csv file from row 2, use `skip = 1`. Use `mutate` function to update the 'sex' and 'apoe4' column. `filter` function has been used to remove the rows where `age_at_onset` has empty values which indicates no MCI at baseline. `r nrow(MCI_baseline_df)` participants were recruited and `r nrow(dev_MCI)` developed MCI. The average baseline age of all the participants is `r MCI_baseline_df |> pull(current_age) |> mean()` and the average baseline age for ones who developed MCI is `r dev_MCI |> pull(current_age) |> mean()`. The proportion of women in the study that are APOE4 carriers is `r proportion_apoe4_carriers`.
+Import `MCI_baseline.csv` and in order to read csv file from row 2, use `skip = 1`. Use `mutate` function to update the `sex` and `apoe4` column. `filter` function has been used to remove the rows where `age_at_onset` has empty values which indicates no MCI at baseline. `r nrow(MCI_baseline_df)` participants were recruited and `r nrow(dev_MCI)` developed MCI. The average baseline age of all the participants is `r MCI_baseline_df |> pull(current_age) |> mean()` and the average baseline age for ones who developed MCI is `r dev_MCI |> pull(current_age) |> mean()`. The proportion of women in the study that are APOE4 carriers is `r proportion_apoe4_carriers`.
 
+```{r}
+mci_amyloid_df = 
+  read.csv("data_mci/mci_amyloid.csv", skip = 1) |>
+  janitor::clean_names() 
+
+mci_amyloid_long =
+  pivot_longer(mci_amyloid_df,
+               cols = baseline:time_8,
+               names_to = 'time',
+              values_to = 'value') |>
+  mutate(time = recode(time,
+    'baseline' = 0,
+    'time_2' = 2,
+    'time_4' = 4,
+    'time_6' = 6,
+    'time_8' = 8
+  ))
+```
+
+Following the same procedure as with `mci_amyloid_df.csv`, skip the first row (header) using `skip = 1`. Since this dataset contains longitudinal data, pivot it from wide format to long format using `pivot_longer` for improved analysis. To enhance dataset clarity, rename the `time` column with more descriptive labels using `recode`.
 
