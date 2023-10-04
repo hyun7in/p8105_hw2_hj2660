@@ -179,10 +179,18 @@ mci_amyloid_long =
 
 Following the same procedure as with `mci_amyloid_df.csv`, skip the first row (header) using `skip = 1`. Since this dataset contains longitudinal data, pivot it from wide format to long format using `pivot_longer` for improved analysis. To enhance dataset clarity, rename the `time` column with more descriptive labels using `recode`. To combine the demographic and biomarker datasets, rename `study_id` to `id`.
 
-Combine demographic and biomarker datasets!!
+Combine demographic and biomarker datasets and export the result as a CSV!!
 ```{r}
 combined_MCI_df = 
   dev_MCI |>
-  inner_join(mci_amyloid_long, by = "id")
+  inner_join(mci_amyloid_long, by = "id") |>
+  mutate(value = as.numeric(value))
+
+write_csv(combined_MCI_df, "data_mci/combined_MCI_df.csv")
 ```
+
+The `id` range for `MCI_baseline_df` dataset is `r range(MCI_baseline_df$id)` and has `r nrow(MCI_baseline_df)` observations. The `study_id` range for `mci_amyloid_df` dataset is `r range(mci_amyloid_df$study_id)` and has `r nrow(mci_amyloid_df)` observations. So, `id` 484 to 495 is missing from `MCI_baseline_df` dataset and some of the data ranging from 1 to 483 is missing from `mci_amyloid_df`.
+In order to combine the demographic and biomarker datasets and retain only the participants who appear in both datasets, we need to merge `dev_MCI`, which already filtered out empty values of `age_at_onset`, with `mci_amyloid_long`, which we pivoted to long format. To combine these two datasets, we used an `inner_join` based on the `id` column. 
+The average Aβ 42/40 ratio (`value` column) for participants classified as `APOE4 carrier` in the dataset. is `r combined_MCI_df |> filter(apoe4 == "APOE4 carrier") |> summarise(mean_value = mean(as.numeric(value), na.rm = TRUE))` and the mean value for those who are `APOE4 non-carrier` is `r combined_MCI_df |> filter(apoe4 == "APOE4 non-carrier") |> summarise(mean_value = mean(as.numeric(value), na.rm = TRUE))`. `APOE4 carrier` tend to have altered amyloid metabolism, resulting in lower Aβ 42/40 ratios, which explains the increased risk of developing Alzheimer's disease in APOE4 carriers.
+
 
