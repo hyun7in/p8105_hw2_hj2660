@@ -12,7 +12,7 @@ library(dplyr)
 
 ## Problem 1
 
-Clean the data in `pols-month.csv`. There are months when Ford became president following Nixon, during which the 'prez_gop' variable is 2. We can reassign these cases to be coded as 'gop,' which is consistent with months when 'prez_gop' is 1. This ensures that the 'president' variable maintains consistency in labeling the political affiliation, regardless of the transition between Nixon and Ford.
+Clean the data in `pols-month.csv`. There are months when Ford became president following Nixon, during which the `prez_gop` variable is 2. We can reassign these cases to be coded as `gop`, which is consistent with months when `prez_gop` is 1. This ensures that the `president` variable maintains consistency in labeling the political affiliation, regardless of the transition between Nixon and Ford.
 
 ```{r}
 pols_df = 
