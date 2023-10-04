@@ -119,7 +119,7 @@ GwynTrashWheel_df =
 While combining three datasets, an error occurred, indicating that there was a data type mismatch between the `year` columns, with one being of type 'character' and the other of type 'double.' To resolve this issue, the `year` column in each dataset was uniformly converted to the 'character' data type. Additionally, a `trash_wheel` column was introduced in each dataset to specify the corresponding Trash Wheel.
 
 ```{r}
-combined_df = 
+combined_TW_df = 
   bind_rows(MrTrashWheel_df, ProfTrashWheel_df, GwynTrashWheel_df)
 ```
 
@@ -173,8 +173,16 @@ mci_amyloid_long =
     'time_4' = 4,
     'time_6' = 6,
     'time_8' = 8
-  ))
+  )) |>
+  rename(id = study_id)
 ```
 
-Following the same procedure as with `mci_amyloid_df.csv`, skip the first row (header) using `skip = 1`. Since this dataset contains longitudinal data, pivot it from wide format to long format using `pivot_longer` for improved analysis. To enhance dataset clarity, rename the `time` column with more descriptive labels using `recode`.
+Following the same procedure as with `mci_amyloid_df.csv`, skip the first row (header) using `skip = 1`. Since this dataset contains longitudinal data, pivot it from wide format to long format using `pivot_longer` for improved analysis. To enhance dataset clarity, rename the `time` column with more descriptive labels using `recode`. To combine the demographic and biomarker datasets, rename `study_id` to `id`.
+
+Combine demographic and biomarker datasets!!
+```{r}
+combined_MCI_df = 
+  dev_MCI |>
+  inner_join(mci_amyloid_long, by = "id")
+```
 
