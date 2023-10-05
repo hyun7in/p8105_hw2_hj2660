@@ -86,7 +86,7 @@ The `pols_df` has `r nrow(pols_df)` observations and `r ncol(pols_df)` variables
 Clean and organize the dataset for Mr. Trash Wheel.
 ```{r}
 MrTrashWheel_df = 
-  readxl::read_excel("./Trash_Wheel/202309 Trash Wheel Collection Data.xlsx", sheet = "Mr. Trash Wheel", range = "A2:N586") |>
+  readxl::read_excel("./Trash_Wheel/202309 Trash Wheel Collection Data.xlsx", sheet = "Mr. Trash Wheel", range = "B2:N586") |>
   janitor::clean_names() |>
   mutate(homes_powered = (weight_tons * 500)/30) |>
   mutate(trash_wheel = "Mr. Trash Wheel") |>
@@ -97,7 +97,7 @@ MrTrashWheel_df =
 Clean and organize the dataset for Professor Trash Wheel.
 ```{r}
 ProfTrashWheel_df =
-  readxl::read_excel("./Trash_Wheel/202309 Trash Wheel Collection Data.xlsx", sheet = "Professor Trash Wheel", range = "A2:M108") |>
+  readxl::read_excel("./Trash_Wheel/202309 Trash Wheel Collection Data.xlsx", sheet = "Professor Trash Wheel", range = "B2:M108") |>
   janitor::clean_names() |>
   mutate(homes_powered = (weight_tons * 500)/30) |>
   mutate(trash_wheel = "Professor Trash Wheel") |>
@@ -107,7 +107,7 @@ ProfTrashWheel_df =
 Clean and organize the dataset for Gwynnda Trash Wheel.
 ```{r}
 GwynTrashWheel_df =
-  readxl::read_excel("./Trash_Wheel/202309 Trash Wheel Collection Data.xlsx", sheet = "Gwynnda Trash Wheel", range = "A2:K157") |>
+  readxl::read_excel("./Trash_Wheel/202309 Trash Wheel Collection Data.xlsx", sheet = "Gwynnda Trash Wheel", range = "B2:K157") |>
   janitor::clean_names() |>
   mutate(homes_powered = (weight_tons * 500)/30) |>
   mutate(trash_wheel = "Gwynnda Trash Wheel") |>
@@ -123,11 +123,13 @@ combined_TW_df =
 
 In the `MrTrashWheel_df` dataset, there are `r nrow(MrTrashWheel_df)` observations and `r ncol(MrTrashWheel_df)` variables. The average number of homes powered is `r MrTrashWheel_df |> pull(homes_powered) |> mean()`, and the total weight of trash collected is `r MrTrashWheel_df |> pull(weight_tons) |> sum()` tons. For the `ProfTrashWheel_df` dataset, it consists of `r nrow(ProfTrashWheel_df)` observations and `r ncol(ProfTrashWheel_df)` variables, with an average of homes powered equal to `r ProfTrashWheel_df |> pull(homes_powered) |> mean()`. The total weight of trash collected by Professor Trash Wheel is `r ProfTrashWheel_df |> pull(weight_tons) |> sum()` tons. For the `GwynTrashWheel_df` dataset, there are `r nrow(GwynTrashWheel_df)` observations and `r ncol(GwynTrashWheel_df)` variables. The average number of homes powered is `r GwynTrashWheel_df |> pull(homes_powered) |> mean()`, and the total weight of trash collected is `r GwynTrashWheel_df |> pull(weight_tons) |> sum()` tons. Lastly, Gwynnda collected a total of `r GwynTrashWheel_df |> filter(format(date, "%Y-%m") == "2021-07") |> pull(cigarette_butts) |> sum() |> as.integer()` cigarette butts in July of 2021.
 
+To confirm the accuracy of the combined data, I counted the `Mr. Trash Wheel` entries in the `combined_TW_df` dataset, which is `r combined_TW_df |> filter(trash_wheel == "Mr. Trash Wheel") |> summarise(count = n())`. The result matches the number of records in the `MrTrashWheel_df` dataset, ensuring that the data is correct.
+
 ## Problem 3
 
 ```{r}
 MCI_baseline_df = 
-  read.csv("data_mci/MCI_baseline.csv", skip = 1) |>
+  read.csv("data_mci/MCI_baseline.csv", skip = 1, na = ".") |>
   janitor::clean_names() |>
   mutate(sex = recode(sex, '1' = "male", '0' = "female")) |>
   mutate(apoe4 = recode(apoe4, '1' = "APOE4 carrier", '0' = "APOE4 non-carrier"))
@@ -137,8 +139,8 @@ dev_MCI =
   filter(age_at_onset !=".")
 ```
 
-```{r, echo=FALSE, results='hide'}
-apoe4_carriers =
+```{r}
+apoe4_carriers_w =
   MCI_baseline_df |>
   filter(sex == "female") |> 
   filter (apoe4 == "APOE4 carrier") |> 
@@ -150,14 +152,14 @@ total_female =
   nrow()
 
 proportion_apoe4_carriers =
-  apoe4_carriers / total_female
+  apoe4_carriers_w / total_female
 ```
 
-Import `MCI_baseline.csv` and in order to read csv file from row 2, use `skip = 1`. Use `mutate` function to update the `sex` and `apoe4` column. `filter` function has been used to remove the rows where `age_at_onset` has empty values which indicates no MCI at baseline. `r nrow(MCI_baseline_df)` participants were recruited and `r nrow(dev_MCI)` developed MCI. The average baseline age of all the participants is `r MCI_baseline_df |> pull(current_age) |> mean()` and the average baseline age for ones who developed MCI is `r dev_MCI |> pull(current_age) |> mean()`. The proportion of women in the study that are APOE4 carriers is `r proportion_apoe4_carriers`.
+Import `MCI_baseline.csv` and in order to read csv file from row 2, used `skip = 1` and changed '.' to 'NA'. Use `mutate` function to update the `sex` and `apoe4` column. `filter` function has been used to remove the rows where `age_at_onset` has empty values which indicates no MCI at baseline. `r nrow(MCI_baseline_df)` participants were recruited and `r nrow(dev_MCI)` developed MCI. The average baseline age of all the participants is `r MCI_baseline_df |> pull(current_age) |> mean()` years old and the average baseline age for ones who developed MCI is `r dev_MCI |> pull(current_age) |> mean()` years old. Number of women who are APOE4 carriers is `r apoe4_carriers_w` and the number of total female is `r total_female`. The proportion of women in the study that are APOE4 carriers is `r proportion_apoe4_carriers`.
 
 ```{r}
 mci_amyloid_df = 
-  read.csv("data_mci/mci_amyloid.csv", skip = 1) |>
+  read.csv("data_mci/mci_amyloid.csv", skip = 1, , na = "Na") |>
   janitor::clean_names() 
 
 mci_amyloid_long =
@@ -175,20 +177,19 @@ mci_amyloid_long =
   rename(id = study_id)
 ```
 
-Following the same procedure as with `mci_amyloid_df.csv`, skip the first row (header) using `skip = 1`. Since this dataset contains longitudinal data, pivot it from wide format to long format using `pivot_longer` for improved analysis. To enhance dataset clarity, rename the `time` column with more descriptive labels using `recode`. To combine the demographic and biomarker datasets, rename `study_id` to `id`.
+Following the same procedure as with `mci_amyloid_df.csv`, skip the first row (header) using `skip = 1`. There were 'Na' value and 'NA', so I converted using `na = "Na"` for consistency. Since this dataset contains longitudinal data, pivot it from wide format to long format using `pivot_longer` for improved analysis. To enhance dataset clarity, rename the `time` column with more descriptive labels using `recode`. To combine the demographic and biomarker datasets, rename `study_id` to `id`.
 
 Combine demographic and biomarker datasets and export the result as a CSV!!
 ```{r}
 combined_MCI_df = 
-  dev_MCI |>
-  inner_join(mci_amyloid_long, by = "id") |>
-  mutate(value = as.numeric(value))
+  MCI_baseline_df |>
+  inner_join(mci_amyloid_long, by = "id")
 
 write_csv(combined_MCI_df, "data_mci/combined_MCI_df.csv")
 ```
 
-The `id` range for `MCI_baseline_df` dataset is `r range(MCI_baseline_df$id)` and has `r nrow(MCI_baseline_df)` observations. The `study_id` range for `mci_amyloid_df` dataset is `r range(mci_amyloid_df$study_id)` and has `r nrow(mci_amyloid_df)` observations. So, `id` 484 to 495 is missing from `MCI_baseline_df` dataset and some of the data ranging from 1 to 483 is missing from `mci_amyloid_df`.
-In order to combine the demographic and biomarker datasets and retain only the participants who appear in both datasets, we need to merge `dev_MCI`, which already filtered out empty values of `age_at_onset`, with `mci_amyloid_long`, which we pivoted to long format. To combine these two datasets, we used an `inner_join` based on the `id` column. 
-The average Aβ 42/40 ratio (`value` column) for participants classified as `APOE4 carrier` in the dataset. is `r combined_MCI_df |> filter(apoe4 == "APOE4 carrier") |> summarise(mean_value = mean(as.numeric(value), na.rm = TRUE))` and the mean value for those who are `APOE4 non-carrier` is `r combined_MCI_df |> filter(apoe4 == "APOE4 non-carrier") |> summarise(mean_value = mean(as.numeric(value), na.rm = TRUE))`. `APOE4 carrier` tend to have altered amyloid metabolism, resulting in lower Aβ 42/40 ratios, which explains the increased risk of developing Alzheimer's disease in APOE4 carriers.
+The `id` range for `MCI_baseline_df` dataset is [`r range(MCI_baseline_df$id)`] and has `r nrow(MCI_baseline_df)` observations. The `study_id` range for `mci_amyloid_df` dataset is [`r range(mci_amyloid_df$study_id)`] and has `r nrow(mci_amyloid_df)` observations. So, `id` 484 to 495 is missing from `MCI_baseline_df` dataset and some of the data ranging from 1 to 483 is missing from `mci_amyloid_df`.
+In order to combine the demographic and biomarker datasets and retain only the participants who appear in both datasets, we used `inner_join` to merge `MCI_baseline_df` based on the `id` with `mci_amyloid_long`, which we pivoted to long format.
+The average Aβ 42/40 ratio (`value` column) for participants classified as `APOE4 carrier` in the dataset is `r combined_MCI_df |> filter(apoe4 == "APOE4 carrier") |> summarise(mean_value = mean(as.numeric(value), na.rm = TRUE))` and the mean value for those who are `APOE4 non-carrier` is `r combined_MCI_df |> filter(apoe4 == "APOE4 non-carrier") |> summarise(mean_value = mean(as.numeric(value), na.rm = TRUE))`. `APOE4 carrier` tend to have altered amyloid metabolism, resulting in lower Aβ 42/40 ratios, which explains the increased risk of developing Alzheimer's disease in APOE4 carriers.
 
 
