@@ -182,14 +182,17 @@ Following the same procedure as with `mci_amyloid_df.csv`, skip the first row (h
 Combine demographic and biomarker datasets and export the result as a CSV!!
 ```{r}
 combined_MCI_df = 
-  MCI_baseline_df |>
+  dev_MCI |>
   inner_join(mci_amyloid_long, by = "id")
 
 write_csv(combined_MCI_df, "data_mci/combined_MCI_df.csv")
 ```
 
 The `id` range for `MCI_baseline_df` dataset is [`r range(MCI_baseline_df$id)`] and has `r nrow(MCI_baseline_df)` observations. The `study_id` range for `mci_amyloid_df` dataset is [`r range(mci_amyloid_df$study_id)`] and has `r nrow(mci_amyloid_df)` observations. So, `id` 484 to 495 is missing from `MCI_baseline_df` dataset and some of the data ranging from 1 to 483 is missing from `mci_amyloid_df`.
-In order to combine the demographic and biomarker datasets and retain only the participants who appear in both datasets, we used `inner_join` to merge `MCI_baseline_df` based on the `id` with `mci_amyloid_long`, which we pivoted to long format.
+
+In order to combine the demographic and biomarker datasets and retain only the participants who appear in both datasets, we used `inner_join` to merge `dev_MCI` based on the `id` with `mci_amyloid_long`, which we pivoted to long format. Combining the original data `MCI_baseline_df` seemed meaningless since it contained those who did not develop MCI.
+
 The average Aβ 42/40 ratio (`value` column) for participants classified as `APOE4 carrier` in the dataset is `r combined_MCI_df |> filter(apoe4 == "APOE4 carrier") |> summarise(mean_value = mean(as.numeric(value), na.rm = TRUE))` and the mean value for those who are `APOE4 non-carrier` is `r combined_MCI_df |> filter(apoe4 == "APOE4 non-carrier") |> summarise(mean_value = mean(as.numeric(value), na.rm = TRUE))`. `APOE4 carrier` tend to have altered amyloid metabolism, resulting in lower Aβ 42/40 ratios, which explains the increased risk of developing Alzheimer's disease in APOE4 carriers.
+
 
 
